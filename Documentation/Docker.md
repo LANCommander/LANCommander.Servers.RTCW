@@ -1,3 +1,7 @@
+---
+sidebar_label: Docker
+---
+
 # Return to Castle Wolfenstein Docker Container
 
 This repository provides a Dockerized **Return to Castle Wolfenstein dedicated server via iortcw** suitable for running multiplayer Return to Castle Wolfenstein servers in a clean, reproducible way.  
