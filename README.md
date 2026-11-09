@@ -203,6 +203,41 @@ Archives are extracted into /config/Overlay. Single files are copied as-is.
 
 ---
 
+## Match Statistics
+
+The server can report the matches played on it to LANCommander, with the
+[LANCommander match statistics plugin](https://github.com/LANCommander/LANCommander.MatchStatistics.QMM).
+The plugin runs in [QMM2](https://github.com/thecybermind/qmm2), and both are built into the image. They are
+turned on when `MATCH_STATS_SERVER_URL` and `MATCH_STATS_TOKEN` are set. QMM2 then takes the place of the game
+module, `main/qagame.mp.x86_64.so`, and loads the game's own module (kept as `qmm_qagame.mp.x86_64.so`) and the plugin. Turned off, the
+game's own module is put back.
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MATCH_STATS_ENABLED` | `auto`: on when `MATCH_STATS_SERVER_URL` and `MATCH_STATS_TOKEN` are set. `true` or `false` | `auto` |
+| `MATCH_STATS_SERVER_URL` | The LANCommander server, e.g. `http://lancommander.lan:1337`. Only `http://` works on Linux | *(empty)* |
+| `MATCH_STATS_TOKEN` | A LANCommander access token with the **Report matches** scope (Profile → Access Tokens). It isn't written to any file | *(empty)* |
+| `MATCH_STATS_GAME_ID` | The game's id in LANCommander | *(empty)* |
+| `MATCH_STATS_SERVER_ID` | This server's id in LANCommander, if LANCommander manages it | *(empty)* |
+| `MATCH_STATS_MIN_PLAYERS` | Human players needed before a match is recorded | *(1)* |
+| `MATCH_STATS_RECORD_BOTS` | Record bots as players (`true`/`false`) | *(true)* |
+| `MATCH_STATS_RECORD_CHAT` | Record chat messages (`true`/`false`) | *(false)* |
+| `QMM_MOD_DIR` | The folder of the mod the server runs (its `fs_game`) | `main` |
+| `QMM_PLUGINS` | More QMM2 plugins to load, comma-separated, relative to `QMM_MOD_DIR` | *(empty)* |
+
+The settings are written to `main/lancommander_qmm.cfg` as `lc_*` cvars on every start, and QMM2 execs it once
+the plugin has loaded. Settings left empty aren't written, so they and the plugin's other `lc_*` cvars (see its
+README) can be set in `server.cfg` instead, with `set`. A `qmm2.json` you put in `Overlay/main/` yourself is
+left alone.
+
+`+set vm_game 0` is added to the command line, and QMM2 runs iortcw's native `qagame.mp.x86_64.so` (`QMM_MOD`). iortcw runs its `vm/qagame.mp.qvm` by default, but QMM2 crashes the server running it.
+
+`lc_status` on the server console or over RCON shows the match being recorded and how delivery is going. Reports
+that couldn't be delivered yet are kept in `Overlay/main/qmmaddons/lancommander/.interposer/Matches/` and sent
+once LANCommander can be reached.
+
+---
+
 ## Running the Server
 ### Basic run (recommended)
 ```bash
